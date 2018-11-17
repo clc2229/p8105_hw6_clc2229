@@ -1,0 +1,19 @@
+---
+title: "Homework 6"
+author: "Christopher Crowe"
+date: "November 16, 2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+set.seed(1)
+
+```
+
+### Problem 1
+
+
+### Problem 2

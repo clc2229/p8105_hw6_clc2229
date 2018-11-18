@@ -82,9 +82,14 @@ fit_logistic %>%
   filter(term == "victim_raceNon-White") %>% 
   select(OR, lower_cl, upper_cl) %>% 
   knitr::kable(digits = 3)
-  
-}
 
+}
+```
+
+The following code chunk extracts the OR and 95% CI for each city/state in the dataset. 
+
+```{r}
+## final_or = map(.x = homicides$city_state, ~ or_race(.x))
 ```
 
 

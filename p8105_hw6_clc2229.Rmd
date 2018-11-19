@@ -8,6 +8,8 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(MASS)
+select = dplyr::select
 
 set.seed(1)
 
@@ -87,7 +89,6 @@ final_homicides %>%
   knitr::kable(digits = 3)
 ```
 
-
 The below code chunk creates a plot of the ORs and 95% CIs for victim race (non-white vs. white). Based on this plot, we can see which locations have odds ratios that are significantly different from the null value of 1.0. There are no locations where the odds of being resolved is higher for non-white victims than it is for white victims (i.e. no ORs significantly greater than 1.0). However, we can see quite a few locations where the odds of being resolved is lower for non-white victims than it is for white victims (i.e. some ORs are significantly less than 1.0). Boston, MA has the lowest OR (~0.68). 
 
 ```{r}
@@ -107,11 +108,9 @@ final_homicides %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 6)) 
 ```
 
-
-
 ### Problem 2
 
-The following code chunk reads in the data.
+The following code chunk reads in the data and ensures that all categorical variables are labeled appropriately and treated as factor variables with appropriate reference levels. Additionally, this code chunk checks to see how many missing values are in this dataset, and we see that there are 0 missing values. 
 
 ```{r}
 birthweight = read.csv("./data/birthweight.csv") %>% 
@@ -143,11 +142,27 @@ birthweight = read.csv("./data/birthweight.csv") %>%
     ),
     malform = fct_relevel(malform, "Absent")
     )
-  
 
-birthweight %>% 
-  ggplot(aes(x = gaweeks, y = bwt)) +
-  geom_point()
+sum(is.na(birthweight))
+
+
+```
+
+The following code chunk creates a linear model to predict a baby's birthweight based on a variety of information from the mother. Based on my general intution about birthweight, I included the following predictors in my initial model: mother's weight at delivery (pounds), gestational age in weeks, mother's pre-pregnancy weight (pounds), average number of cigarettes smoked per day during pregnancy, previous number of low birthweight babies, and mother's weight gain during pregnancy (pounds). I then used a step-wise model selection process to determine which of these predictors should be included in the final model. The final model contains: mother's weight at delivery (pounds), gestational age in weeks, mother's pre-pregnancy weight (pounds), and average number of cigarettes smoked per day during pregnancy.
+
+```{r}
+model_1 = 
+  lm(bwt ~ delwt + gaweeks + ppwt + smoken + pnumlbw + wtgain, data = birthweight) %>% 
+  stepAIC(direction = "both") %>% 
+  broom::tidy() %>% 
+  janitor::clean_names()
+
+
+```
+
+The following code chunk creates two additional linear models.
+
+```{r}
 
 model_2 = lm(bwt ~ blength + gaweeks, data = birthweight)
 

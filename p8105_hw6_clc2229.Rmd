@@ -73,17 +73,40 @@ nest_glm_res =
          models = map(models, broom::tidy)) %>% 
   select(-data)
 
-nest_glm_res %>% 
+final_homicides = nest_glm_res %>% 
   unnest() %>% 
   janitor::clean_names() %>% 
   mutate(OR = exp(estimate),
          lower_cl = exp(estimate - (1.96 * std_error)),
          upper_cl = exp(estimate + (1.96 * std_error))
   ) %>% 
-  filter(term == "victim_raceNon-White") %>% 
-  select(city_state, OR, lower_cl, upper_cl) %>% 
+  filter(term == "victim_raceNon-White") %>%
+  select(city_state, OR, lower_cl, upper_cl) 
+  
+final_homicides %>% 
   knitr::kable(digits = 3)
 ```
+
+
+The below code chunk creates a plot of the ORs and 95% CIs for victim race (non-white vs. white). Based on this plot, we can see which locations have odds ratios that are significantly different from the null value of 1.0. There are no locations where the odds of being resolved is higher for non-white victims than it is for white victims (i.e. no ORs significantly greater than 1.0). However, we can see quite a few locations where the odds of being resolved is lower for non-white victims than it is for white victims (i.e. some ORs are significantly less than 1.0). Boston, MA has the lowest OR (~0.68). 
+
+```{r}
+final_homicides %>% 
+  arrange(desc(OR)) %>% 
+  mutate(city_state = forcats::fct_inorder(city_state)) %>% 
+  ggplot(aes(x = city_state, y = OR)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower_cl, ymax = upper_cl)) +
+  labs(
+    x = "City & State",
+    y = "Estimated Odds Ratio Comparing Non-White to White",
+    title = "Odds Ratios of Resolved Homicides Comparing Non-White to White"
+  ) +
+  scale_y_continuous(expand = c(0,0)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 6)) 
+```
+
 
 
 ### Problem 2

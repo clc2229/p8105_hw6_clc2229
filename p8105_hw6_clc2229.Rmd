@@ -61,35 +61,28 @@ fit_logistic %>%
 
 ```
 
-The following code chunk creates a function to run a logistic regression and extract the OR and 95% CI. 
+The following code chunk extracts the OR and 95% CI for each city/state in the dataset. 
 
 ```{r}
 
-or_race = function(x) {
-  
-fit_logistic = 
+nest_glm_res =
   homicides %>% 
-  filter(city_state == x) %>% 
-  glm(resolved ~ victim_age + victim_sex + victim_race, data = ., family = binomial())
+  group_by(city_state) %>% 
+  nest() %>% 
+  mutate(models = map(data, ~lm(resolved ~ victim_age + victim_sex + victim_race, data = .x)),
+         models = map(models, broom::tidy)) %>% 
+  select(-data)
 
-fit_logistic %>% 
-  broom::tidy() %>% 
+nest_glm_res %>% 
+  unnest() %>% 
   janitor::clean_names() %>% 
   mutate(OR = exp(estimate),
          lower_cl = exp(estimate - (1.96 * std_error)),
          upper_cl = exp(estimate + (1.96 * std_error))
-  ) %>%
+  ) %>% 
   filter(term == "victim_raceNon-White") %>% 
-  select(OR, lower_cl, upper_cl) %>% 
+  select(city_state, OR, lower_cl, upper_cl) %>% 
   knitr::kable(digits = 3)
-
-}
-```
-
-The following code chunk extracts the OR and 95% CI for each city/state in the dataset. 
-
-```{r}
-## final_or = map(.x = homicides$city_state, ~ or_race(.x))
 ```
 
 

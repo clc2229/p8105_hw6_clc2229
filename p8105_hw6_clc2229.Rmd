@@ -156,13 +156,18 @@ model_1 =
   lm(bwt ~ delwt + gaweeks + ppwt + smoken + pnumlbw + wtgain, data = birthweight) %>% 
   stepAIC(direction = "both")
 
+```
+
+The following code chunk creates a plot of the residuals and predicted values for the model we just created. From this plot, we can see that this linear model is NOT optimal. If it were optimal, we'd expect to see a generally horizontal band around 0. However, we can see that the residuals at the lower end of the scale are relatively far from 0.  
+
+```{r}
 birthweight %>% 
   modelr::add_residuals(model_1) %>% 
   modelr::add_predictions(model_1) %>% 
   ggplot(aes(x = pred, y = resid)) +
     geom_point()
-
 ```
+
 
 The following code chunk creates two additional linear models.
 

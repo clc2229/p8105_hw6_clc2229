@@ -182,7 +182,7 @@ The following code chunk creates two additional linear models.
 model_2 = lm(bwt ~ blength + gaweeks, data = birthweight)
 
 
-model_3 = lm(bwt ~ bhead + blength + babysex + bhead*blength*babysex + bhead*blength + bhead*babysex + blength+babysex, data = birthweight)
+model_3 = lm(bwt ~ bhead + blength + babysex + bhead*blength*babysex + bhead*blength + bhead*babysex + blength*babysex, data = birthweight)
 
 ```
 

@@ -21,7 +21,7 @@ set.seed(1)
 
 ### Problem 1
 
-The code chunk below puts the data in a format that is appropriate for modeling. For example, it ensures that predictors of interest are the appropriate data types and removes data from some cities that do not report some data.
+The code chunk below puts the data in a format that is appropriate for modeling. For example, it ensures that predictors of interest are the appropriate data types and removes data from some cities that do not report some data. Additionally, it creates a `city_state` variable (e.g. “Baltimore, MD”), and a binary variable indicating whether the homicide is solved.
 
 ```{r}
 homicides = read.csv("./data/homicide-data.csv")
@@ -186,7 +186,7 @@ model_3 = lm(bwt ~ bhead + blength + babysex + bhead*blength*babysex + bhead*ble
 
 ```
 
-The following code chunk compares the three linear models we just created using the `crossv_mc` function. 
+The following code chunk compares the three linear models we just created using the `crossv_mc` function. We can see that the distribution of RMSE values is much higher for model 1 than it is for models 2 and 3. Model 3 (with head circumference, length, sex, and all interactions) appears to be the best model since it has the smallest RMSE values. 
 
 ```{r}
 cv_birthweight = 
@@ -206,6 +206,7 @@ cv_birthweight %>%
   gather(key = model, value = rmse) %>% 
   mutate(model = str_replace(model, "rmse_", ""),
          model = fct_inorder(model)) %>% 
-  ggplot(aes(x = model, y = rmse)) + geom_violin()
+  ggplot(aes(x = model, y = rmse)) + geom_violin() +
+  theme_bw()
 ```
 

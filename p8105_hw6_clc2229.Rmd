@@ -75,7 +75,7 @@ nest_glm_res =
   homicides %>% 
   group_by(city_state) %>% 
   nest() %>% 
-  mutate(models = map(data, ~lm(resolved ~ victim_age + victim_sex + victim_race, data = .x)),
+  mutate(models = map(data, ~glm(resolved ~ victim_age + victim_sex + victim_race, data = .x, family = binomial)),
          models = map(models, broom::tidy)) %>% 
   select(-data)
 
